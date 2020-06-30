@@ -17,7 +17,13 @@
 package io.anserini.collection;
 
 /**
- * Exception indicating than an error was encountered while processing the contents of a {@link SourceDocument}.
+ * Exception indicating than an error was encountered while processing the
+ * contents of a {@link SourceDocument}.
  */
 public class InvalidContentsException extends RuntimeException {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 }

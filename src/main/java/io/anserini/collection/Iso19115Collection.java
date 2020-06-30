@@ -30,14 +30,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Document>{
-  public Iso19115Collection(Path path){
+public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Document> {
+  public Iso19115Collection(Path path) {
     this.path = path;
     this.allowedFileSuffix = new HashSet<>(Arrays.asList(".json", ".jsonl"));
   }
 
   @Override
-  public FileSegment<Iso19115Collection.Document> createFileSegment(Path p) throws IOException{
+  public FileSegment<Iso19115Collection.Document> createFileSegment(Path p) throws IOException {
     return new Segment(p);
   }
 
@@ -51,9 +51,9 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
       bufferedReader = new BufferedReader(new FileReader(path.toString()));
       ObjectMapper mapper = new ObjectMapper();
       iterator = mapper.readerFor(JsonNode.class).readValues(bufferedReader);
-      if(iterator.hasNext()){
+      if (iterator.hasNext()) {
         node = iterator.next();
-        if(node.isArray()) {
+        if (node.isArray()) {
           iter = node.elements();
         }
       }
@@ -61,29 +61,28 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
 
     @Override
     public void readNext() throws NoSuchElementException {
-      if (node == null){
+      if (node == null) {
         throw new NoSuchElementException("JsonNode is empty");
       } else if (node.isObject()) {
         bufferedRecord = new Iso19115Collection.Document(node);
-        if(iterator.hasNext()) {
+        if (iterator.hasNext()) {
           node = iterator.next();
         } else {
           atEOF = true;
         }
       } else if (node.isArray()) {
         if (iter != null && iter.hasNext()) {
-          JsonNode json = iter.next();
           bufferedRecord = new Iso19115Collection.Document(node);
         } else {
           throw new NoSuchElementException("Reached end of JsonNode iterator");
         }
       } else {
         throw new NoSuchElementException("Invalid JsonNode type");
-      } 
+      }
     }
   }
 
-  public static class Document implements SourceDocument{
+  public static class Document implements SourceDocument {
     protected String id;
     protected String title;
     protected String abstractContent;
@@ -102,34 +101,38 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
       this.raw = json.toString();
       String identifier = json.get("gmd:MD_Metadata").get("gmd:fileIdentifier").get("gco:CharacterString").asText();
       // extracting the id in the beginning of the text
-      this.id = identifier.substring(0,identifier.length() - 8);
-      this.title = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:citation")
-                   .get("gmd:CI_Citation").get("gmd:title").get("gco:CharacterString").asText();
+      this.id = identifier.substring(0, identifier.length() - 8);
+      this.title = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:citation").get("gmd:CI_Citation").get("gmd:title").get("gco:CharacterString").asText();
       this.abstractContent = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
-                             .get("gmd:abstract").get("gco:CharacterString").asText();
-      this.organisation = json.get("gmd:MD_Metadata").get("gmd:contact").get("gmd:CI_ResponsibleParty").get("gmd:organisationName")
-                    .get("gco:CharacterString").asText();
-      this.catalogue = json.get("gmd:MD_Metadata").get("gmd:contact").get("gmd:CI_ResponsibleParty").get("gmd:individualName")
-              .get("gco:CharacterString").asText();
+          .get("gmd:abstract").get("gco:CharacterString").asText();
+      this.organisation = json.get("gmd:MD_Metadata").get("gmd:contact").get("gmd:CI_ResponsibleParty")
+          .get("gmd:organisationName").get("gco:CharacterString").asText();
+      this.catalogue = json.get("gmd:MD_Metadata").get("gmd:contact").get("gmd:CI_ResponsibleParty")
+          .get("gmd:individualName").get("gco:CharacterString").asText();
       this.publish_time = json.get("gmd:MD_Metadata").get("gmd:dateStamp").get("gco:Date").asText();
       this.url = json.get("gmd:MD_Metadata").get("gmd:dataSetURI").get("gco:CharacterString").asText();
 
       // extracting all the authors of the paper
-      JsonNode parties_node = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:citation")
-                             .get("gmd:CI_Citation").get("gmd:citedResponsibleParty");
+      JsonNode parties_node = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:citation").get("gmd:CI_Citation").get("gmd:citedResponsibleParty");
       // extracting individual authors from the ResponsibleParty field
       int number_of_parties = parties_node.size();
       responsibleParty = new String[number_of_parties];
-      for(int i=0; i < number_of_parties; i++){
-        responsibleParty[i] = parties_node.get(i).get("gmd:CI_ResponsibleParty").get("gmd:individualName").get("gco:CharacterString").asText();
+      for (int i = 0; i < number_of_parties; i++) {
+        responsibleParty[i] = parties_node.get(i).get("gmd:CI_ResponsibleParty").get("gmd:individualName")
+            .get("gco:CharacterString").asText();
       }
 
-      // extracting the latitudes from the paper, 5 points as the polygon needs to be enclosed
+      // extracting the latitudes from the paper, 5 points as the polygon needs to be
+      // enclosed
       latitude = new double[4];
-      latitude[0] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:extent").get("gmd:EX_Extent")
-                    .get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox").get("gmd:northBoundLatitude").get("gco:Decimal").asDouble();
-      latitude[2] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:extent").get("gmd:EX_Extent")
-              .get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox").get("gmd:southBoundLatitude").get("gco:Decimal").asDouble();
+      latitude[0] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:extent").get("gmd:EX_Extent").get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox")
+          .get("gmd:northBoundLatitude").get("gco:Decimal").asDouble();
+      latitude[2] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:extent").get("gmd:EX_Extent").get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox")
+          .get("gmd:southBoundLatitude").get("gco:Decimal").asDouble();
       // ensuring that a single coordinate location will be drawn as a small rectangle
       if (latitude[0] == latitude[2]) {
         latitude[0] -= 0.00001;
@@ -138,12 +141,15 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
       latitude[1] = latitude[0];
       latitude[3] = latitude[2];
 
-      // extracting the longitudes from the paper, again 5 points are needed to enclose the polygon
+      // extracting the longitudes from the paper, again 5 points are needed to
+      // enclose the polygon
       longitude = new double[4];
-      longitude[0] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:extent").get("gmd:EX_Extent")
-              .get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox").get("gmd:westBoundLongitude").get("gco:Decimal").asDouble();
-      longitude[1] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification").get("gmd:extent").get("gmd:EX_Extent")
-              .get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox").get("gmd:eastBoundLongitude").get("gco:Decimal").asDouble();
+      longitude[0] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:extent").get("gmd:EX_Extent").get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox")
+          .get("gmd:westBoundLongitude").get("gco:Decimal").asDouble();
+      longitude[1] = json.get("gmd:MD_Metadata").get("gmd:identificationInfo").get("gmd:MD_DataIdentification")
+          .get("gmd:extent").get("gmd:EX_Extent").get("gmd:geographicElement").get("gmd:EX_GeographicBoundingBox")
+          .get("gmd:eastBoundLongitude").get("gco:Decimal").asDouble();
       // ensuring that a single coordinate location will be drawn as a small rectangle
       if (longitude[0] == longitude[1]) {
         longitude[0] -= 0.00001;
@@ -190,7 +196,7 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
     private String getCoordinateString() {
       StringBuilder coordinates = new StringBuilder("[");
       // generating it in this form for literal evaluation in javascript
-      for(int i=0; i < 4; i++) {
+      for (int i = 0; i < 4; i++) {
         coordinates.append("[");
         coordinates.append(latitude[i]);
         coordinates.append(",");
@@ -204,9 +210,13 @@ public class Iso19115Collection extends DocumentCollection<Iso19115Collection.Do
       return coordinates.toString();
     }
 
-    public double[] getLatitude() { return latitude; }
+    public double[] getLatitude() {
+      return latitude;
+    }
 
-    public double[] getLongitude() { return longitude; }
+    public double[] getLongitude() {
+      return longitude;
+    }
 
     @Override
     public String id() {

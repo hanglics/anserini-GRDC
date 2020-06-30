@@ -37,7 +37,7 @@ import java.util.Set;
 public class Cord19AbstractCollection extends DocumentCollection<Cord19AbstractCollection.Document> {
   private static final Logger LOG = LogManager.getLogger(Cord19AbstractCollection.class);
 
-  public Cord19AbstractCollection(Path path){
+  public Cord19AbstractCollection(Path path) {
     this.path = path;
     this.allowedFileSuffix = Set.of(".csv");
   }
@@ -57,13 +57,10 @@ public class Cord19AbstractCollection extends DocumentCollection<Cord19AbstractC
 
     public Segment(Path path) throws IOException {
       super(path);
-      bufferedReader = new BufferedReader(new InputStreamReader(
-          new FileInputStream(path.toString())));
+      bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toString())));
 
-      csvParser = new CSVParser(bufferedReader, CSVFormat.DEFAULT
-        .withFirstRecordAsHeader()
-        .withIgnoreHeaderCase()
-        .withTrim());
+      csvParser = new CSVParser(bufferedReader,
+          CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
 
       iterator = csvParser.iterator();
       if (iterator.hasNext()) {
@@ -92,7 +89,7 @@ public class Cord19AbstractCollection extends DocumentCollection<Cord19AbstractC
         try {
           csvParser.close();
         } catch (IOException e) {
-          // do nothing
+          LOG.error(e.getMessage());
         }
       }
     }

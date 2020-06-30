@@ -34,18 +34,20 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * A JSON document collection.
- * This class reads all <code>.json</code> files in the input directory.
- * Inside each file is either a JSON Object (one document) or a JSON Array (multiple documents) or
- * a JSON Document on each line (not actually valid Json String)
- * Example of JSON Object:
+ * A JSON document collection. This class reads all <code>.json</code> files in
+ * the input directory. Inside each file is either a JSON Object (one document)
+ * or a JSON Array (multiple documents) or a JSON Document on each line (not
+ * actually valid Json String) Example of JSON Object:
+ * 
  * <pre>
  * {
  *   "id": "doc1",
  *   "contents": "this is the contents."
  * }
  * </pre>
+ * 
  * Example of JSON Array:
+ * 
  * <pre>
  * [
  *   {
@@ -58,7 +60,9 @@ import java.util.NoSuchElementException;
  *   }
  * ]
  * </pre>
+ * 
  * Example of JSON objects, each per line (not actually valid Json String):
+ * 
  * <pre>
  * {"id": "doc1", "contents": "this is the contents 1."}
  * {"id": "doc2", "contents": "this is the contents 2."}
@@ -68,7 +72,7 @@ import java.util.NoSuchElementException;
 public class JsonCollection extends DocumentCollection<JsonCollection.Document> {
   private static final Logger LOG = LogManager.getLogger(JsonCollection.class);
 
-  public JsonCollection(Path path){
+  public JsonCollection(Path path) {
     this.path = path;
     this.allowedFileSuffix = new HashSet<>(Arrays.asList(".json", ".jsonl"));
   }
@@ -105,14 +109,14 @@ public class JsonCollection extends DocumentCollection<JsonCollection.Document> 
         throw new NoSuchElementException("JsonNode is empty");
       } else if (node.isObject()) {
         bufferedRecord = new JsonCollection.Document(node);
-        if (iterator.hasNext()) { // if bufferedReader contains JSON line objects, we parse the next JSON into node
+        if (iterator.hasNext()) { // if bufferedReader contains JSON line objects, we parse the next JSON into
+                                  // node
           node = iterator.next();
         } else {
           atEOF = true; // there is no more JSON object in the bufferedReader
         }
       } else if (node.isArray()) {
         if (iter != null && iter.hasNext()) {
-          JsonNode json = iter.next();
           bufferedRecord = new JsonCollection.Document(node);
         } else {
           throw new NoSuchElementException("Reached end of JsonNode iterator");
@@ -135,7 +139,7 @@ public class JsonCollection extends DocumentCollection<JsonCollection.Document> 
     public Document(JsonNode json) {
       this.fields = new HashMap<>();
 
-      json.fields().forEachRemaining( e -> {
+      json.fields().forEachRemaining(e -> {
         if ("id".equals(e.getKey())) {
           this.id = json.get("id").asText();
         } else if ("contents".equals(e.getKey())) {
