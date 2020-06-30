@@ -19,23 +19,14 @@ package io.anserini.index.generator;
 import io.anserini.collection.Iso19115Collection;
 import io.anserini.index.IndexArgs;
 import org.apache.lucene.document.*;
-import org.apache.lucene.document.LatLonShape;
-import org.apache.lucene.geo.Polygon;
-import org.apache.lucene.index.Fields;
 
-public class Iso19115Generator extends DefaultLuceneDocumentGenerator<Iso19115Collection.Document>{
+public class Iso19115Generator extends DefaultLuceneDocumentGenerator<Iso19115Collection.Document> {
   protected IndexArgs args;
 
   // constants for storing
   public enum Iso19115Field {
-    ID("id"),
-    TITLE("title"),
-    ABSTRACT("abstract"),
-    ORGANISATION("organisation"),
-    RESPONSIBLE_PARTY("responsible_party"),
-    CATALOGUE("catalogue"),
-    PUBLISH_TIME("publish_time"),
-    URL("url"),
+    ID("id"), TITLE("title"), ABSTRACT("abstract"), ORGANISATION("organisation"),
+    RESPONSIBLE_PARTY("responsible_party"), CATALOGUE("catalogue"), PUBLISH_TIME("publish_time"), URL("url"),
     COORDINATES("coordinates");
 
     public final String name;
@@ -62,22 +53,20 @@ public class Iso19115Generator extends DefaultLuceneDocumentGenerator<Iso19115Co
 
     // indexing the authors
     String[] responsibleParty = doc.getResponsibleParty();
-    for(String author: responsibleParty) {
+    for (String author : responsibleParty) {
       document.add(new StringField(Iso19115Field.RESPONSIBLE_PARTY.name, author, Field.Store.YES));
     }
 
     // indexing the coordinates
     document.add(new StringField(Iso19115Field.COORDINATES.name, doc.getCoordinates(), Field.Store.YES));
-    /* Polygon indexing unused for now, but may be used later
-    // indexing the longitude and latitudes, each field is an indexable ShapeField.Triangle object
-    Field[] polygonField = LatLonShape.createIndexableFields(Iso19115Field.COORDINATES.name, new Polygon(
-            doc.getLatitude(),
-            doc.getLongitude()
-    ));
-    for(Field field: polygonField) {
-      document.add(field);
-    }
-    */
+    /*
+     * Polygon indexing unused for now, but may be used later // indexing the
+     * longitude and latitudes, each field is an indexable ShapeField.Triangle
+     * object Field[] polygonField =
+     * LatLonShape.createIndexableFields(Iso19115Field.COORDINATES.name, new
+     * Polygon( doc.getLatitude(), doc.getLongitude() )); for(Field field:
+     * polygonField) { document.add(field); }
+     */
     return document;
   }
 }
