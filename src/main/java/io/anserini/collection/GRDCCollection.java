@@ -65,15 +65,15 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
         }
     }
 
-    protected static class attachment {
-        protected String report_id;
-        protected String attachment_url;
-        protected String attachment_id;
-        protected String attachment_name;
-        protected String attachment_size;
-        protected String attachment_type;
-        protected String attachment_base64_content;
-        protected String attachment_full_text_content;
+    public static class Attachment {
+        public String report_id;
+        public String attachment_url;
+        public String attachment_id;
+        public String attachment_name;
+        public String attachment_size;
+        public String attachment_type;
+        public String attachment_base64_content;
+        public String attachment_full_text_content;
     }
 
     public static class Document implements SourceDocument {
@@ -105,7 +105,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
         protected String ip_summary;
         protected String additional_information;
         protected String report_full_text_content;
-        protected attachment[] attachments;
+        protected Attachment[] attachments;
         protected String raw;
 
         public Document(JsonNode json) {
@@ -159,7 +159,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
 
             // extracting all attachments from the attachments field
             int number_of_attachments = attachments_node.size();
-            this.attachments = new attachment[number_of_attachments];
+            this.attachments = new Attachment[number_of_attachments];
 
             // check if there are attachments, if not, assign empty array
             if (number_of_attachments > 0) {
@@ -303,7 +303,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
             return additional_information;
         }
 
-        public attachment[] getAttachments() {
+        public Attachment[] getAttachments() {
             return attachments;
         }
 

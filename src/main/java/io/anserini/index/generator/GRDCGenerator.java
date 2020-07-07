@@ -1,6 +1,7 @@
 package io.anserini.index.generator;
 
 import io.anserini.collection.GRDCCollection;
+import io.anserini.collection.GRDCCollection.Attachment;
 import io.anserini.index.IndexArgs;
 import org.apache.lucene.document.*;
 
@@ -39,31 +40,63 @@ public class GRDCGenerator extends DefaultLuceneDocumentGenerator<GRDCCollection
     public Document createDocument(GRDCCollection.Document doc) throws GeneratorException {
         Document document = super.createDocument(doc);
 
-        document.add(new StoredField(GRDCFields.REPORT_ID.name, doc.id()));
+        document.add(new StringField(GRDCFields.REPORT_ID.name, doc.id(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.PROJECT_NUMBER.name, doc.getProjectNumber(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_TITLE.name, doc.getReportTitle(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REGION_NAME.name, doc.getRegionName(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.CATEGORY_NAME.name, doc.getCategoryName(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.RESEARCH_THEME_NAME.name, doc.getResearchThemeName(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.ORGANIZATION_NAME.name, doc.getOrganizationName(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.COMMENCE_DATE.name, doc.getCommenceDate(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.COMPLETE_DATE.name, doc.getCompleteDate(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.STATE.name, doc.getState(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.SUPERVISOR_NAME.name, doc.getSupervisorName(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_TYPE.name, doc.getReportType(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_STATUS.name, doc.getReportStatus(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.PUBLISH_DATE.name, doc.getPublishDate(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_SUMMARY.name, doc.getReportSummary(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.PDF_URL.name, doc.getPDFURL(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.WEB_URL.name, doc.getWebURL(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.HTML_CONTENT.name, doc.getHTMLContent(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_ACHIEVEMENT.name, doc.getReportAchievement(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_CONCLUSION.name, doc.getReportConclusion(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_OUTCOME.name, doc.getReportOutcome(), Field.Store.YES));
+        document.add(
+                new StringField(GRDCFields.REPORT_RECOMMENDATION.name, doc.getReportRecommendation(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_DISCUSSION.name, doc.getReportDiscussion(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.OTHER_RESEARCH.name, doc.getOtherResearch(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.IP_SUMMARY.name, doc.getIPSummary(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.ADDITIONAL_INFORMATION.name, doc.getAdditionalInformation(),
+                Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_FULL_TEXT_CONTENT.name, doc.contents(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.RAW.name, doc.raw(), Field.Store.YES));
 
-        document.add(new StoredField(GRDCFields.TITLE.name, doc.getTitle()));
-        document.add(new StoredField(GRDCFields.ABSTRACT.name, doc.getAbstract()));
-        document.add(new StringField(GRDCFields.ORGANISATION.name, doc.getOrganisation(), Field.Store.YES));
-        document.add(new StringField(GRDCFields.CATALOGUE.name, doc.getCatalogue(), Field.Store.YES));
-        document.add(new StringField(GRDCFields.PUBLISH_TIME.name, doc.getPublish_time(), Field.Store.YES));
-        document.add(new StringField(GRDCFields.URL.name, doc.getUrl(), Field.Store.YES));
+        // examples of StoredField and StringField
+        // document.add(new StoredField(GRDCFields.TITLE.name, doc.getTitle()));
+        // document.add(new StringField(GRDCFields.ORGANISATION.name,
+        // doc.getOrganisation(), Field.Store.YES));
 
-        // indexing the authors
-        String[] responsibleParty = doc.getResponsibleParty();
-        for (String author : responsibleParty) {
-            document.add(new StringField(GRDCFields.RESPONSIBLE_PARTY.name, author, Field.Store.YES));
+        // indexing the keywords
+        String[] keywords = doc.getKeywords();
+        for (String keyword : keywords) {
+            document.add(new StringField(GRDCFields.KEYWORDS.name, keyword, Field.Store.YES));
         }
 
-        // indexing the coordinates
-        document.add(new StringField(GRDCFields.COORDINATES.name, doc.getCoordinates(), Field.Store.YES));
-        /*
-         * Polygon indexing unused for now, but may be used later // indexing the
-         * longitude and latitudes, each field is an indexable ShapeField.Triangle
-         * object Field[] polygonField =
-         * LatLonShape.createIndexableFields(Iso19115Field.COORDINATES.name, new
-         * Polygon( doc.getLatitude(), doc.getLongitude() )); for(Field field:
-         * polygonField) { document.add(field); }
-         */
+        // indexing the attachments
+        Attachment[] attachments = doc.getAttachments();
+        for (Attachment attach : attachments) {
+            document.add(new StringField(GRDCFields.REPORT_ID.name, attach.report_id, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_URL.name, attach.attachment_url, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_ID.name, attach.attachment_id, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_NAME.name, attach.attachment_name, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_SIZE.name, attach.attachment_size, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_TYPE.name, attach.attachment_name, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_BASE64_CONTENT.name, attach.attachment_base64_content,
+                    Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_FULL_TEXT_CONTENT.name,
+                    attach.attachment_full_text_content, Field.Store.YES));
+        }
+
         return document;
     }
 }
