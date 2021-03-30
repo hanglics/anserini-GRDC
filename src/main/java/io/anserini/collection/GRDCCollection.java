@@ -69,6 +69,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
         public String attachment_name;
         public String attachment_size;
         public String attachment_type;
+        public String attachment_path;
         public String[] attachment_full_text_content;
 
         public Attachment() {
@@ -78,6 +79,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
             attachment_name = null;
             attachment_size = null;
             attachment_type = null;
+            attachment_path = null;
             attachment_full_text_content = new String[0];
         }
     }
@@ -97,6 +99,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
         protected String report_type;
         protected String report_status;
         protected String publish_date;
+        protected String report_path;
         protected String[] report_summary;
         protected String[] keywords;
         protected String pdf_url;
@@ -132,6 +135,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
             this.report_type = json.get("report_type").asText();
             this.report_status = json.get("report_status").asText();
             this.publish_date = json.get("publish_date").asText();
+            this.report_path = json.get("report_path").asText();
             this.pdf_url = json.get("pdf_url").asText();
             this.web_url = json.get("web_url").asText();
             this.ip_summary = json.get("ip_summary").asText();
@@ -301,6 +305,7 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
                     this.attachments[k].attachment_size = attachments_node.get(k).get("attachment_size").asText();
                     this.attachments[k].attachment_type = attachments_node.get(k).get("attachment_type").asText();
                     this.attachments[k].attachment_url = attachments_node.get(k).get("attachment_url").asText();
+                    this.attachments[k].attachment_path = attachments_node.get(k).get("attachment_path").asText();
                     this.attachments[k].report_id = attachments_node.get(k).get("report_id").asText();
                 }
             } else {
@@ -382,6 +387,10 @@ public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> 
 
         public String getPublishDate() {
             return publish_date;
+        }
+
+        public String getReportPath() {
+            return report_path;
         }
 
         public String[] getReportSummary() {

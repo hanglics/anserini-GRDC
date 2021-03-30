@@ -16,12 +16,12 @@ public class GRDCGenerator extends DefaultLuceneDocumentGenerator<GRDCCollection
         STATE("state"), SUPERVISOR_NAME("supervisor_name"), REPORT_TYPE("report_type"), REPORT_STATUS("report_status"),
         PUBLISH_DATE("publish_date"), REPORT_SUMMARY("report_summary"), KEYWORDS("keywords"), PDF_URL("pdf_url"),
         WEB_URL("web_url"), HTML_CONTENT("html_content"), REPORT_ACHIEVEMENT("report_achievement"),
-        REPORT_CONCLUSION("report_conclusion"), REPORT_OUTCOME("report_outcome"),
+        REPORT_CONCLUSION("report_conclusion"), REPORT_OUTCOME("report_outcome"), REPORT_PATH("report_path"),
         REPORT_RECOMMENDATION("report_recommendation"), REPORT_DISCUSSION("report_discussion"),
         OTHER_RESEARCH("other_research"), IP_SUMMARY("ip_summary"), ADDITIONAL_INFORMATION("additional_information"),
         REPORT_FULL_TEXT_CONTENT("report_full_text_content"), ATTACHMENTS("attachments"),
         ATTACHMENT_URL("attachment_url"), ATTACHMENT_ID("attachment_id"), ATTACHMENT_NAME("attachment_name"),
-        ATTACHMENT_SIZE("attachment_size"), ATTACHMENT_TYPE("attachment_type"),
+        ATTACHMENT_SIZE("attachment_size"), ATTACHMENT_TYPE("attachment_type"), ATTACHMENT_PATH("attachment_path"),
         ATTACHMENT_FULL_TEXT_CONTENT("attachment_full_text_content");
 
         public final String name;
@@ -56,6 +56,7 @@ public class GRDCGenerator extends DefaultLuceneDocumentGenerator<GRDCCollection
         document.add(new StringField(GRDCFields.PDF_URL.name, doc.getPDFURL(), Field.Store.YES));
         document.add(new StringField(GRDCFields.WEB_URL.name, doc.getWebURL(), Field.Store.YES));
         document.add(new StringField(GRDCFields.IP_SUMMARY.name, doc.getIPSummary(), Field.Store.YES));
+        document.add(new StringField(GRDCFields.REPORT_PATH.name, doc.getReportPath(), Field.Store.YES));
 
         // examples of StoredField and StringField
         // document.add(new StoredField(GRDCFields.TITLE.name, doc.getTitle()));
@@ -137,6 +138,7 @@ public class GRDCGenerator extends DefaultLuceneDocumentGenerator<GRDCCollection
             document.add(new StringField(GRDCFields.ATTACHMENT_NAME.name, attach.attachment_name, Field.Store.YES));
             document.add(new StringField(GRDCFields.ATTACHMENT_SIZE.name, attach.attachment_size, Field.Store.YES));
             document.add(new StringField(GRDCFields.ATTACHMENT_TYPE.name, attach.attachment_name, Field.Store.YES));
+            document.add(new StringField(GRDCFields.ATTACHMENT_PATH.name, attach.attachment_path, Field.Store.YES));
 
             String[] attachment_contents = attach.attachment_full_text_content;
             for (String attachment_content : attachment_contents) {
