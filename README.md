@@ -43,6 +43,14 @@ cd tools/eval/ndeval && make && cd ../../..
 
 With that, you should be ready to go!
 
+## GRDC Indexing
+
+Use the following command to index the AgAsk collectin, including GRDC reports and journal articles.
+
+```
+sh target/appassembler/bin/IndexCollection -collection GRDCPassageCollection -input /home/ielab/data/collection/<collection jsonl dir> -index /home/ielab/data/index/<index output dir> -generator GRDCPassageGenerator -threads 9 -storeRaw
+```
+
 ## Anserini Regression Experiments
 
 Anserini is designed to support experiments on various standard IR test collections out of the box.
