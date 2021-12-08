@@ -13,7 +13,7 @@ import java.util.*;
 public class GRDCCollection extends DocumentCollection<GRDCCollection.Document> {
     public GRDCCollection(Path path) {
         this.path = path;
-        this.allowedFileSuffix = new HashSet<>(Arrays.asList(".json"));
+        this.allowedFileSuffix = new HashSet<>(Arrays.asList(".json", ".jsonl"));
     }
 
     @Override
