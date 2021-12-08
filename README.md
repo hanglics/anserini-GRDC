@@ -45,10 +45,18 @@ With that, you should be ready to go!
 
 ## GRDC Indexing
 
+We developed a customised indexer represented by four java files: GRDCCollection.java, GRDCPassageCollection.java, GRDCGenerator.java, GRDCPassageGenerator.java. These files, however, were tested on the latest Anserini version (0.13.6) at the time of deploying AgAsk for the TCG meeting on the 3rd of Dec, 2021. A future plan is to abondon the customised indexer and the use the default version of Anserini.
+
 Use the following command to index the AgAsk collectin, including GRDC reports and journal articles.
 
 ```
-sh target/appassembler/bin/IndexCollection -collection GRDCPassageCollection -input /home/ielab/data/collection/<collection jsonl dir> -index /home/ielab/data/index/<index output dir> -generator GRDCPassageGenerator -threads 9 -storeRaw
+sh target/appassembler/bin/IndexCollection -collection GRDCPassageCollection -input /home/ielab/data/collection/<collection jsonl dir> -index /home/ielab/data/index/<index output dir> -generator GRDCPassageGenerator -threads 9 -storeRaw -storeContents
+```
+
+Set the following environment variable because Pyserini relies on it to find Anserini jar files.
+
+```
+export ANSERINI_CLASSPATH=/home/ielab/anserini/target
 ```
 
 ## Anserini Regression Experiments
